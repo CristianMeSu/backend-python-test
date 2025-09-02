@@ -40,7 +40,7 @@ def google_pass():
     },
     "heroImage": {
         "sourceUri": {
-            "uri": "https://itmgroup.mx/core/views/ed294a0d7e/assets/logo-ITM-Group.png"
+            "uri": "https://itmgroup.mx/core/views/ed294a0d7e/assets/logo-ITM-Group-Blanco.png"
         },
         "contentDescription": {
             "defaultValue": {
