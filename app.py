@@ -21,6 +21,8 @@ CLASS_ID = "itm-group-directorio"
 @app.route("/google-pass")
 def google_pass():
     persona = request.args.get("persona", "demo")
+    nombre = request.args.get("nombre", "Usuario Demo")
+    cargo = request.args.get("cargo", "Cargo Demo")
 
     object_id = f"{ISSUER_ID}.obj-{persona}"
 
@@ -34,7 +36,7 @@ def google_pass():
     "barcode": {
         "type": "QR_CODE",
         "value": f"https://itmgroup.mx/directorio/{persona}/",
-        "alternateText": persona
+        "alternateText": cargo
     },
     "heroImage": {
         "sourceUri": {
@@ -50,19 +52,19 @@ def google_pass():
     "cardTitle": {
         "defaultValue": {
             "language": "es",
-            "value": "Directorio ITM"
+            "value": "ITM Group"
         }
     },
     "header": {
         "defaultValue": {
             "language": "es",
-            "value": "Directorio ITM"
+            "value": nombre
         }
     },
     "textModulesData": [
         {
             "header": "Directorio-ITM",
-            "body": "Directorio-Directores-ITM"
+            "body": nombre
         }
     ]
 }
