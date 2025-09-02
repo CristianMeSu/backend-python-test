@@ -2,15 +2,19 @@ from flask import Flask, request, redirect
 import jwt
 import time
 import json
+import os
+from google.oauth2 import service_account
 
 app = Flask(__name__)
 
-# Cargar credenciales de la service account
-with open("service-account.json", "r") as f:
-    creds = json.load(f)
+# Leer las credenciales desde la variable de entorno
+service_account_info = json.loads(os.environ["GOOGLE_APPLICATION_CREDENTIALS_JSON"])
+credentials = service_account.Credentials.from_service_account_info(service_account_info)
 
-SERVICE_ACCOUNT_EMAIL = creds["client_email"]
-PRIVATE_KEY = creds["private_key"]
+# Extraer email y private key directamente del JSON
+SERVICE_ACCOUNT_EMAIL = service_account_info["client_email"]
+PRIVATE_KEY = service_account_info["private_key"]
+
 ISSUER_ID = "3388000000022978257"
 CLASS_ID = "itm-group-directorio"
 
