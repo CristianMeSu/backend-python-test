@@ -101,8 +101,8 @@ def google_pass():
 # APPLE WALLET CONFIG
 # ==========================
 # Apple Wallet config
-PASS_TYPE_IDENTIFIER = "pass.com.itmgroup.directorio"
-TEAM_IDENTIFIER = "TU_TEAM_ID"
+PASS_TYPE_IDENTIFIER = "pass.itm-group-directorio"
+TEAM_IDENTIFIER = "2ULQN9G3B2"
 #For Localhost
 # CERT_P12_PATH = os.path.join(".", "certificates", "certificate.p12")
 # WWDR_PEM_PATH = os.path.join(".", "certificates", "wwdr.pem")
