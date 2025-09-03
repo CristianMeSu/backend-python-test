@@ -1,8 +1,4 @@
 from flask import Flask, request, redirect, send_file
-import jwt
-import time
-import json
-import os
 from google.oauth2 import service_account
 from flask import Flask, send_file, request
 import jwt, time, json, os
@@ -132,6 +128,8 @@ def apple_pass():
 
     # Añadir imágenes si las tienes disponibles
     # passfile.addFile("icon.png", open("icon.png", "rb"))
+    passfile.addFile("icon.png", open("/etc/secrets/logo-ITM-Group-Blanco.png", "rb"))
+    passfile.addFile("logo.png", open("/etc/secrets/logo-ITM-Group-Blanco.png", "rb"))
 
     # Generar archivo .pkpass
     filename = f"{persona}.pkpass"
@@ -142,7 +140,17 @@ def apple_pass():
         CERT_P12_PASSWORD,
         filename
     )
+    from flask import after_this_request
+    import os
 
+    @after_this_request
+    def remove_file(response):
+        try:
+            os.remove(filename)
+        except Exception as e:
+            print(f"No se pudo borrar {filename}: {e}")
+        return response
+    
     return send_file(filename, as_attachment=True, download_name=filename)
 
 
