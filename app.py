@@ -154,10 +154,10 @@ def apple_pass():
     CERT_P12_PATH = "/etc/secrets/cert.pem"  # o  certificate.p12
     KEY_PATH      = "/etc/secrets/key.pem"
     WWDR_PEM_PATH = "/etc/secrets/wwdr.pem"
-    # ICON_PATH     = "/etc/secrets/isoazul.png"
-    # LOGO_PATH     = "/etc/secrets/logo-ITM-Group-Blanco.png"
-    # passfile.addFile("icon.png", open(ICON_PATH, "rb"))
-    # passfile.addFile("logo.png", open(LOGO_PATH, "rb"))
+    ICON_PATH     = "/etc/secrets/isoazul.png"
+    LOGO_PATH     = "/etc/secrets/logo-ITM-Group-Blanco.png"
+    passfile.addFile("icon.png", open(ICON_PATH, "rb"))
+    passfile.addFile("logo.png", open(LOGO_PATH, "rb"))
 
     # Generar archivo .pkpass
     filename = f"{persona}.pkpass"
