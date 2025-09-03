@@ -10,11 +10,18 @@ app = Flask(__name__)
 # ==========================
 # GOOGLE WALLET CONFIG
 # ==========================
+
+#For localhost:
+# Cargar credenciales de la service account
+# with open("service-account.json", "r") as f:
+#     creds = json.load(f)
+# SERVICE_ACCOUNT_EMAIL = creds["client_email"]
+# PRIVATE_KEY = creds["private_key"]
+
+#For Production:
 # Leer las credenciales desde la variable de entorno
 service_account_info = json.loads(os.environ["GOOGLE_APPLICATION_CREDENTIALS_JSON"])
 credentials = service_account.Credentials.from_service_account_info(service_account_info)
-
-# Extraer email y private key directamente del JSON
 SERVICE_ACCOUNT_EMAIL = service_account_info["client_email"]
 PRIVATE_KEY = service_account_info["private_key"]
 
@@ -96,9 +103,14 @@ def google_pass():
 # Apple Wallet config
 PASS_TYPE_IDENTIFIER = "pass.com.itmgroup.directorio"
 TEAM_IDENTIFIER = "TU_TEAM_ID"
-CERT_P12_PATH = os.path.join("/etc/secrets", "certificate.p12")
-WWDR_PEM_PATH = os.path.join("/etc/secrets", "wwdr.pem")
-CERT_P12_PASSWORD = os.environ.get("APPLE_P12_PASSWORD")
+#For Localhost
+# CERT_P12_PATH = os.path.join(".", "certificates", "certificate.p12")
+# WWDR_PEM_PATH = os.path.join(".", "certificates", "wwdr.pem")
+
+# For Production
+# CERT_P12_PATH = os.path.join("/etc/secrets", "certificate.p12")
+# WWDR_PEM_PATH = os.path.join("/etc/secrets", "wwdr.pem")
+# CERT_P12_PASSWORD = os.environ.get("APPLE_P12_PASSWORD")
 
 @app.route("/apple-pass")
 def apple_pass():
@@ -128,20 +140,48 @@ def apple_pass():
 
     # Añadir imágenes si las tienes disponibles
     # passfile.addFile("icon.png", open("icon.png", "rb"))
-    passfile.addFile("icon.png", open("/etc/secrets/logo-ITM-Group-Blanco.png", "rb"))
-    passfile.addFile("logo.png", open("/etc/secrets/logo-ITM-Group-Blanco.png", "rb"))
+    #For LocalHost:
+    # icon_path = os.path.join("certificates", "logo-ITM-Group-Blanco.png")
+    # logo_path = os.path.join("certificates", "logo-ITM-Group-Blanco.png")
+
+    # passfile.addFile("icon.png", open(icon_path, "rb"))
+    # passfile.addFile("logo.png", open(logo_path, "rb"))
+    # CERT_PATH = os.path.join(".", "certificates", "cert.pem")
+    # KEY_PATH = os.path.join(".", "certificates", "key.pem")
+    # WWDR_PATH = os.path.join(".", "certificates", "wwdr.pem")
+
+    #For Production:
+    CERT_P12_PATH = "/etc/secrets/certificate.p12"  # o cert.pem si usas PEM
+    KEY_PATH      = "/etc/secrets/key.pem"
+    WWDR_PEM_PATH = "/etc/secrets/wwdr.pem"
+    ICON_PATH     = "/etc/secrets/logo-ITM-Group-Blanco.png"
+    LOGO_PATH     = "/etc/secrets/logo-ITM-Group-Blanco.png"
+    passfile.addFile("icon.png", open(ICON_PATH, "rb"))
+    passfile.addFile("logo.png", open(LOGO_PATH, "rb"))
 
     # Generar archivo .pkpass
     filename = f"{persona}.pkpass"
+    #For Localhost
+    # passfile.create(
+    #     CERT_PATH,       # certificado
+    #     KEY_PATH,        # clave privada
+    #     WWDR_PATH,       # certificado WWDR
+    #     None,  # contraseña original del .p12
+    #     filename         # archivo de salida
+    # )
+    
+    #For Production
     passfile.create(
-        CERT_P12_PATH,    # certificate
-        CERT_P12_PATH,    # key (usando el mismo .p12)
-        WWDR_PEM_PATH,    # wwdr certificate
-        CERT_P12_PASSWORD,# password
-        filename          # output file
+        CERT_P12_PATH,
+        KEY_PATH,
+        WWDR_PEM_PATH,
+        None,
+        filename
     )
+
+
     from flask import after_this_request
-    import os
+    
 
     @after_this_request
     def remove_file(response):
