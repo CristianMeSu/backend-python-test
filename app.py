@@ -120,7 +120,7 @@ def apple_pass():
 
     # Crear StoreCard
     card = StoreCard()
-    card.addPrimaryField("nombre", nombre, "Nombre")
+    card.addPrimaryField("nombre", nombre )
     card.addSecondaryField("cargo", cargo, "Cargo")
 
     passfile = Pass(
@@ -154,8 +154,8 @@ def apple_pass():
     CERT_P12_PATH = "/etc/secrets/cert.pem"  # o  certificate.p12
     KEY_PATH      = "/etc/secrets/key.pem"
     WWDR_PEM_PATH = "/etc/secrets/wwdr.pem"
-    ICON_PATH     = "/etc/secrets/isoazul.png"
-    LOGO_PATH     = "/etc/secrets/logo-ITM-Group-Blanco.png"
+    ICON_PATH = os.path.join("static", "assets", "icon.png")
+    LOGO_PATH = os.path.join("static", "assets", "logo.png")
     passfile.addFile("icon.png", open(ICON_PATH, "rb"))
     passfile.addFile("logo.png", open(LOGO_PATH, "rb"))
 
