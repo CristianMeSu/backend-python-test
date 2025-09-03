@@ -121,9 +121,9 @@ def apple_pass():
     passfile.description = "Directorio ITM"
 
     passfile.barcode = Barcode(
-        message=f"https://itmgroup.mx/directorio/{persona}/",
-        format=BarcodeFormat.QR_CODE,
-        altText=cargo
+    message=f"https://itmgroup.mx/directorio/{persona}/",
+    format="PKBarcodeFormatQR",
+    altText=cargo
     )
 
     # Añadir imágenes si las tienes disponibles
