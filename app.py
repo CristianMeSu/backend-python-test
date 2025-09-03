@@ -151,7 +151,7 @@ def apple_pass():
     # WWDR_PATH = os.path.join(".", "certificates", "wwdr.pem")
 
     #For Production:
-    CERT_P12_PATH = "/etc/secrets/certificate.p12"  # o cert.pem si usas PEM
+    CERT_P12_PATH = "/etc/secrets/cert.pem"  # o  certificate.p12
     KEY_PATH      = "/etc/secrets/key.pem"
     WWDR_PEM_PATH = "/etc/secrets/wwdr.pem"
     ICON_PATH     = "/etc/secrets/logo-ITM-Group-Blanco.png"
