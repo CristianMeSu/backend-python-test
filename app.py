@@ -114,9 +114,9 @@ TEAM_IDENTIFIER = "TU_TEAM_ID"
 
 @app.route("/apple-pass")
 def apple_pass():
-    persona = request.args.get("persona", "demo")
-    nombre = request.args.get("nombre", "Usuario Demo")
-    cargo = request.args.get("cargo", "Cargo Demo")
+    persona = request.args.get("persona")
+    nombre = request.args.get("nombre")
+    cargo = request.args.get("cargo")
 
     # Crear StoreCard (generic)
     card = StoreCard()
@@ -190,8 +190,12 @@ def apple_pass():
         except Exception as e:
             print(f"No se pudo borrar {filename}: {e}")
         return response
-    
-    return send_file(filename, as_attachment=True, download_name=filename)
+    pkpass_path = f"./{persona}.pkpass"
+    return send_file(
+        pkpass_path,
+        mimetype="application/vnd.apple.pkpass",
+        as_attachment=True,
+        download_name="itm-directorio.pkpass")
 
 
 if __name__ == "__main__":
