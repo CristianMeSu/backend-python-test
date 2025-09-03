@@ -120,7 +120,7 @@ def apple_pass():
 
     # Crear StoreCard
     card = StoreCard()
-    card.addAuxiliaryField("nombre", nombre, "Nombre")
+    card.addSecondaryField("nombre", nombre, "Nombre")
     card.addSecondaryField("cargo", cargo, "Cargo")
 
     passfile = Pass(
