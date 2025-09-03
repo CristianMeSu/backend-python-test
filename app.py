@@ -118,7 +118,7 @@ def apple_pass():
     nombre = request.args.get("nombre")
     cargo = request.args.get("cargo")
 
-    # Crear StoreCard (generic)
+    # Crear StoreCard
     card = StoreCard()
     card.addPrimaryField("nombre", nombre, "Nombre")
     card.addSecondaryField("cargo", cargo, "Cargo")
@@ -133,9 +133,9 @@ def apple_pass():
     passfile.description = "Directorio ITM"
 
     passfile.barcode = Barcode(
-    message=f"https://itmgroup.mx/directorio/{persona}/",
-    format="PKBarcodeFormatQR",
-    altText=cargo
+        message=f"https://itmgroup.mx/directorio/{persona}/",
+        format="PKBarcodeFormatQR",
+        altText=cargo
     )
 
     # Añadir imágenes si las tienes disponibles
@@ -190,13 +190,13 @@ def apple_pass():
         except Exception as e:
             print(f"No se pudo borrar {filename}: {e}")
         return response
-    pkpass_path = f"./{persona}.pkpass"
+
     return send_file(
-        pkpass_path,
+        filename,
         mimetype="application/vnd.apple.pkpass",
         as_attachment=True,
-        download_name="itm-directorio.pkpass")
-
+        download_name="itm-directorio.pkpass"
+    )
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
