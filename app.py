@@ -154,10 +154,15 @@ def apple_pass():
     CERT_P12_PATH = "/etc/secrets/cert.pem"  # o  certificate.p12
     KEY_PATH      = "/etc/secrets/key.pem"
     WWDR_PEM_PATH = "/etc/secrets/wwdr.pem"
-    ICON_PATH = os.path.join("static", "assets", "icon.png")
-    LOGO_PATH = os.path.join("static", "assets", "logo.png")
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # carpeta donde está app.py
+
+    ICON_PATH = os.path.join(BASE_DIR, "static", "assets", "isoazul.png")
+    LOGO_PATH = os.path.join(BASE_DIR, "static", "assets", "logo.png")
+    BACKGROUND_PATH = os.path.join(BASE_DIR, "static", "assets", "background.png")  # si lo añades
+
     passfile.addFile("icon.png", open(ICON_PATH, "rb"))
     passfile.addFile("logo.png", open(LOGO_PATH, "rb"))
+    passfile.addFile("background.png", open(BACKGROUND_PATH, "rb"))  # opcional
 
     # Generar archivo .pkpass
     filename = f"{persona}.pkpass"
