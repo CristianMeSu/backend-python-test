@@ -134,11 +134,11 @@ def apple_pass():
     # Generar archivo .pkpass
     filename = f"{persona}.pkpass"
     passfile.create(
-        certificate=CERT_P12_PATH,
-        key=CERT_P12_PATH,      # usar el mismo .p12 aquí
-        wwdr_certificate=WWDR_PEM_PATH,
-        password=CERT_P12_PASSWORD,
-        output=filename
+        CERT_P12_PATH,    # certificate
+        CERT_P12_PATH,    # key (usando el mismo .p12)
+        WWDR_PEM_PATH,    # wwdr certificate
+        CERT_P12_PASSWORD,# password
+        filename          # output file
     )
     from flask import after_this_request
     import os
