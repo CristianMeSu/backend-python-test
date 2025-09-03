@@ -1,12 +1,19 @@
-from flask import Flask, request, redirect
+from flask import Flask, request, redirect, send_file
 import jwt
 import time
 import json
 import os
 from google.oauth2 import service_account
+from flask import Flask, send_file, request
+import jwt, time, json, os
+from google.oauth2 import service_account
+from py_pkpass.models import Pass, Barcode, BarcodeFormat, StoreCard
 
 app = Flask(__name__)
 
+# ==========================
+# GOOGLE WALLET CONFIG
+# ==========================
 # Leer las credenciales desde la variable de entorno
 service_account_info = json.loads(os.environ["GOOGLE_APPLICATION_CREDENTIALS_JSON"])
 credentials = service_account.Credentials.from_service_account_info(service_account_info)
@@ -86,6 +93,58 @@ def google_pass():
     save_url = f"https://pay.google.com/gp/v/save/{token}"
 
     return redirect(save_url)
+
+# ==========================
+# APPLE WALLET CONFIG
+# ==========================
+# Apple Wallet config
+PASS_TYPE_IDENTIFIER = "pass.com.itmgroup.directorio"
+TEAM_IDENTIFIER = "TU_TEAM_ID"
+CERT_P12_PATH = os.path.join("/etc/secrets", "certificate.p12")
+WWDR_PEM_PATH = os.path.join("/etc/secrets", "wwdr.pem")
+CERT_P12_PASSWORD = os.environ.get("APPLE_P12_PASSWORD")
+
+@app.route("/apple-pass")
+def apple_pass():
+    persona = request.args.get("persona", "demo")
+    nombre = request.args.get("nombre", "Usuario Demo")
+    cargo = request.args.get("cargo", "Cargo Demo")
+
+    # Crear StoreCard (generic)
+    card = StoreCard()
+    card.addPrimaryField("nombre", nombre, "Nombre")
+    card.addSecondaryField("cargo", cargo, "Cargo")
+
+    passfile = Pass(
+        card,
+        passTypeIdentifier=PASS_TYPE_IDENTIFIER,
+        organizationName="ITM Group",
+        teamIdentifier=TEAM_IDENTIFIER
+    )
+    passfile.serialNumber = persona
+    passfile.description = "Directorio ITM"
+
+    passfile.barcode = Barcode(
+        message=f"https://itmgroup.mx/directorio/{persona}/",
+        format=BarcodeFormat.QR_CODE,
+        altText=cargo
+    )
+
+    # Añadir imágenes si las tienes disponibles
+    # passfile.addFile("icon.png", open("icon.png", "rb"))
+
+    # Generar archivo .pkpass
+    filename = f"{persona}.pkpass"
+    passfile.create(
+        CERT_P12_PATH,
+        None,
+        WWDR_PEM_PATH,
+        CERT_P12_PASSWORD,
+        filename
+    )
+
+    return send_file(filename, as_attachment=True, download_name=filename)
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
