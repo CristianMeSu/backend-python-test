@@ -151,19 +151,29 @@ def apple_pass():
     # WWDR_PATH = os.path.join(".", "certificates", "wwdr.pem")
 
     #For Production:
-    CERT_P12_PATH = "/etc/secrets/cert.pem"  # o  certificate.p12
+    CERT_P12_PATH = "/etc/secrets/cert.pem"  # o certificate.p12
     KEY_PATH      = "/etc/secrets/key.pem"
     WWDR_PEM_PATH = "/etc/secrets/wwdr.pem"
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # carpeta donde está app.py
-    STRIP_PATH = os.path.join(BASE_DIR, "static", "assets", "background.png")
-    ICON_PATH = os.path.join(BASE_DIR, "static", "assets", "isoazul.png")
-    LOGO_PATH = os.path.join(BASE_DIR, "static", "assets", "logo.png")
-    BACKGROUND_PATH = os.path.join(BASE_DIR, "static", "assets", "background.png")  # si lo añades
 
+    STRIP_PATH       = os.path.join(BASE_DIR, "static", "assets", "background.png")
+    ICON_PATH        = os.path.join(BASE_DIR, "static", "assets", "isoazul.png")
+    LOGO_PATH        = os.path.join(BASE_DIR, "static", "assets", "logo.png")
+    LOGO_2X_PATH     = os.path.join(BASE_DIR, "static", "assets", "logo@2x.png")
+    LOGO_3X_PATH     = os.path.join(BASE_DIR, "static", "assets", "logo@3x.png")
+    BACKGROUND_PATH  = os.path.join(BASE_DIR, "static", "assets", "background.png")  # si lo añades
+
+    # Archivos requeridos
     passfile.addFile("icon.png", open(ICON_PATH, "rb"))
+
+    # Logo normal + retina
     passfile.addFile("logo.png", open(LOGO_PATH, "rb"))
-    passfile.addFile("background.png", open(STRIP_PATH, "rb"))  # opcional
-    passfile.addFile("strip.png", open(BACKGROUND_PATH, "rb"))  # opcional
+    passfile.addFile("logo@2x.png", open(LOGO_2X_PATH, "rb"))
+    passfile.addFile("logo@3x.png", open(LOGO_3X_PATH, "rb"))
+
+    # Opcionales
+    passfile.addFile("background.png", open(STRIP_PATH, "rb"))
+    passfile.addFile("strip.png", open(BACKGROUND_PATH, "rb"))
 
     # Generar archivo .pkpass
     filename = f"{persona}.pkpass"
