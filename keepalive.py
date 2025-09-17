@@ -15,6 +15,6 @@ def ping():
 if __name__ == "__main__":
     while True:
         ping()
-        wait_minutes = random.randint(20, 27)
+        wait_minutes = random.randint(17, 22)
         print(f"Esperando {wait_minutes} minutos...")
         time.sleep(wait_minutes * 60)
