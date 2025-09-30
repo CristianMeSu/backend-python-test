@@ -59,7 +59,7 @@ def google_pass():
         "barcode": {
             "type": "QR_CODE",
             "value": qr_url,
-            "alternateText": cargo
+            "alternateText": persona  # 👈 aquí mejor pon algo corto
         },
         "heroImage": {
             "sourceUri": {"uri": hero_image},
@@ -67,9 +67,13 @@ def google_pass():
         },
         "cardTitle": {"defaultValue": {"language": "es", "value": card_title}},
         "header": {"defaultValue": {"language": "es", "value": nombre}},
-        "textModulesData": [{"header": "Directorio", "body": nombre}],
-        "hexBackgroundColor": background_color   # 🎨 color de fondo definido
+        "textModulesData": [
+            {"header": "Directorio", "body": nombre},
+            {"header": "Cargo", "body": cargo}
+        ],
+        "hexBackgroundColor": background_color
     }
+
 
 
     # Construir JWT
