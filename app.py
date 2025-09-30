@@ -1,9 +1,7 @@
-from flask import Flask, request, redirect, send_file
+from flask import Flask, request, redirect, send_file, after_this_request
 from google.oauth2 import service_account
-from flask import Flask, send_file, request
+from py_pkpass.models import Pass, Barcode, StoreCard
 import jwt, time, json, os
-from google.oauth2 import service_account
-from py_pkpass.models import Pass, Barcode, BarcodeFormat, StoreCard
 
 app = Flask(__name__)
 
@@ -33,51 +31,42 @@ def google_pass():
     persona = request.args.get("persona", "demo")
     nombre = request.args.get("nombre", "Usuario Demo")
     cargo = request.args.get("cargo", "Cargo Demo")
+    realestate = request.args.get("realestate", "false").lower() == "true"
 
     object_id = f"{ISSUER_ID}.obj-{persona}"
 
+    # =======================
+    # Lógica según realestate
+    # =======================
+    if realestate:
+        qr_url = f"https://itmdesarrolladores.com/directorio/{persona}/"
+        hero_image = "https://itmdesarrolladores.com/assets/logo-realestate.png"
+        card_title = "ITM Desarrolladores"
+    else:
+        qr_url = f"https://itmgroup.mx/directorio/{persona}/"
+        hero_image = "https://itmgroup.mx/core/views/ed294a0d7e/assets/logo-ITM-Group-Blanco.png"
+        card_title = "ITM Group"
+
     # Objeto genérico
     generic_object = {
-    "id": object_id,
-    "classId": f"{ISSUER_ID}.{CLASS_ID}",
-    "state": "ACTIVE",
-    "accountId": persona,
-    "accountName": f"Contacto {persona}",
-    "barcode": {
-        "type": "QR_CODE",
-        "value": f"https://itmgroup.mx/directorio/{persona}/",
-        "alternateText": cargo
-    },
-    "heroImage": {
-        "sourceUri": {
-            "uri": "https://itmgroup.mx/core/views/ed294a0d7e/assets/logo-ITM-Group-Blanco.png"
+        "id": object_id,
+        "classId": f"{ISSUER_ID}.{CLASS_ID}",
+        "state": "ACTIVE",
+        "accountId": persona,
+        "accountName": f"Contacto {persona}",
+        "barcode": {
+            "type": "QR_CODE",
+            "value": qr_url,
+            "alternateText": cargo
         },
-        "contentDescription": {
-            "defaultValue": {
-                "language": "es",
-                "value": "Logo ITM Group"
-            }
-        }
-    },
-    "cardTitle": {
-        "defaultValue": {
-            "language": "es",
-            "value": "ITM Group"
-        }
-    },
-    "header": {
-        "defaultValue": {
-            "language": "es",
-            "value": nombre
-        }
-    },
-    "textModulesData": [
-        {
-            "header": "Directorio-ITM",
-            "body": nombre
-        }
-    ]
-}
+        "heroImage": {
+            "sourceUri": {"uri": hero_image},
+            "contentDescription": {"defaultValue": {"language": "es", "value": "Logo"}}
+        },
+        "cardTitle": {"defaultValue": {"language": "es", "value": card_title}},
+        "header": {"defaultValue": {"language": "es", "value": nombre}},
+        "textModulesData": [{"header": "Directorio", "body": nombre}]
+    }
 
     # Construir JWT
     jwt_payload = {
@@ -85,14 +74,10 @@ def google_pass():
         "aud": "google",
         "typ": "savetowallet",
         "iat": int(time.time()),
-        "payload": {
-            "genericObjects": [generic_object]
-        }
+        "payload": {"genericObjects": [generic_object]}
     }
 
     token = jwt.encode(jwt_payload, PRIVATE_KEY, algorithm="RS256")
-
-    # URL final para Save to Wallet
     save_url = f"https://pay.google.com/gp/v/save/{token}"
 
     return redirect(save_url)
@@ -100,7 +85,7 @@ def google_pass():
 # ==========================
 # APPLE WALLET CONFIG
 # ==========================
-# Apple Wallet config
+
 PASS_TYPE_IDENTIFIER = "pass.itm-group-directorio"
 TEAM_IDENTIFIER = "2ULQN9G3B2"
 #For Localhost
@@ -117,6 +102,29 @@ def apple_pass():
     persona = request.args.get("persona")
     nombre = request.args.get("nombre")
     cargo = request.args.get("cargo")
+    realestate = request.args.get("realestate", "false").lower() == "true"
+
+    # =======================
+    # Lógica según realestate
+    # =======================
+    if realestate:
+        qr_url = f"https://itmdesarrolladores.com/directorio/{persona}/"
+        ORG_NAME = "ITM Desarrolladores"
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        ICON_PATH = os.path.join(BASE_DIR, "static", "realestate", "icon.png")
+        LOGO_PATH = os.path.join(BASE_DIR, "static", "realestate", "logo.png")
+        LOGO_2X_PATH = os.path.join(BASE_DIR, "static", "realestate", "logo@2x.png")
+        LOGO_3X_PATH = os.path.join(BASE_DIR, "static", "realestate", "logo@3x.png")
+        BACKGROUND_PATH = os.path.join(BASE_DIR, "static", "realestate", "background.png")
+    else:
+        qr_url = f"https://itmgroup.mx/directorio/{persona}/"
+        ORG_NAME = "ITM Group"
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        ICON_PATH = os.path.join(BASE_DIR, "static", "assets", "isoazul.png")
+        LOGO_PATH = os.path.join(BASE_DIR, "static", "assets", "logo.png")
+        LOGO_2X_PATH = os.path.join(BASE_DIR, "static", "assets", "logo@2x.png")
+        LOGO_3X_PATH = os.path.join(BASE_DIR, "static", "assets", "logo@3x.png")
+        BACKGROUND_PATH = os.path.join(BASE_DIR, "static", "assets", "background.png")
 
     # Crear StoreCard
     card = StoreCard()
@@ -126,20 +134,17 @@ def apple_pass():
     passfile = Pass(
         card,
         passTypeIdentifier=PASS_TYPE_IDENTIFIER,
-        organizationName="ITM Group",
+        organizationName=ORG_NAME,
         teamIdentifier=TEAM_IDENTIFIER
     )
     passfile.serialNumber = persona
-    passfile.description = "Directorio ITM"
+    passfile.description = "Directorio"
 
     passfile.barcode = Barcode(
-        message=f"https://itmgroup.mx/directorio/{persona}/",
+        message=qr_url,
         format="PKBarcodeFormatQR",
         altText=cargo
     )
-
-    # Añadir imágenes si las tienes disponibles
-    # passfile.addFile("icon.png", open("icon.png", "rb"))
     #For LocalHost:
     # icon_path = os.path.join("certificates", "logo-ITM-Group-Blanco.png")
     # logo_path = os.path.join("certificates", "logo-ITM-Group-Blanco.png")
@@ -149,35 +154,17 @@ def apple_pass():
     # CERT_PATH = os.path.join(".", "certificates", "cert.pem")
     # KEY_PATH = os.path.join(".", "certificates", "key.pem")
     # WWDR_PATH = os.path.join(".", "certificates", "wwdr.pem")
-
-    #For Production:
-    CERT_P12_PATH = "/etc/secrets/cert.pem"  # o certificate.p12
-    KEY_PATH      = "/etc/secrets/key.pem"
-    WWDR_PEM_PATH = "/etc/secrets/wwdr.pem"
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # carpeta donde está app.py
-
-    STRIP_PATH       = os.path.join(BASE_DIR, "static", "assets", "background.png")
-    ICON_PATH        = os.path.join(BASE_DIR, "static", "assets", "isoazul.png")
-    LOGO_PATH        = os.path.join(BASE_DIR, "static", "assets", "logo.png")
-    LOGO_2X_PATH     = os.path.join(BASE_DIR, "static", "assets", "logo@2x.png")
-    LOGO_3X_PATH     = os.path.join(BASE_DIR, "static", "assets", "logo@3x.png")
-    BACKGROUND_PATH  = os.path.join(BASE_DIR, "static", "assets", "background.png")  # si lo añades
-
-    # Archivos requeridos
+    
+    # Cargar imágenes dinámicamente
     passfile.addFile("icon.png", open(ICON_PATH, "rb"))
-
-    # Logo normal + retina
     passfile.addFile("logo.png", open(LOGO_PATH, "rb"))
     passfile.addFile("logo@2x.png", open(LOGO_2X_PATH, "rb"))
     passfile.addFile("logo@3x.png", open(LOGO_3X_PATH, "rb"))
-
-    # Opcionales
-    passfile.addFile("background.png", open(STRIP_PATH, "rb"))
+    passfile.addFile("background.png", open(BACKGROUND_PATH, "rb"))
     passfile.addFile("strip.png", open(BACKGROUND_PATH, "rb"))
 
     # Generar archivo .pkpass
-    filename = f"{persona}.pkpass"
-    #For Localhost
+        #For Localhost
     # passfile.create(
     #     CERT_PATH,       # certificado
     #     KEY_PATH,        # clave privada
@@ -185,19 +172,12 @@ def apple_pass():
     #     None,  # contraseña original del .p12
     #     filename         # archivo de salida
     # )
-    
-    #For Production
-    passfile.create(
-        CERT_P12_PATH,
-        KEY_PATH,
-        WWDR_PEM_PATH,
-        None,
-        filename
-    )
+    filename = f"{persona}.pkpass"
+    CERT_P12_PATH = "/etc/secrets/cert.pem"
+    KEY_PATH      = "/etc/secrets/key.pem"
+    WWDR_PEM_PATH = "/etc/secrets/wwdr.pem"
 
-
-    from flask import after_this_request
-    
+    passfile.create(CERT_P12_PATH, KEY_PATH, WWDR_PEM_PATH, None, filename)
 
     @after_this_request
     def remove_file(response):
@@ -211,7 +191,7 @@ def apple_pass():
         filename,
         mimetype="application/vnd.apple.pkpass",
         as_attachment=True,
-        download_name="itm-directorio.pkpass"
+        download_name="directorio.pkpass"
     )
 
 if __name__ == "__main__":
