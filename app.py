@@ -43,7 +43,7 @@ def google_pass():
         object_id = f"{ISSUER_ID}.obj-realestate-{persona}"
     else:
         qr_url = f"https://itmgroup.mx/directorio/{persona}/"
-        hero_image = "https://itmgroup.mx/core/views/ed294a0d7e/assets/logo-ITM-Group-Blanco.png"
+        hero_image = "https://itmgroup.mx/core/views/ed294a0d7e/assets/banner-logo.png"
         card_title = "ITM Group"
         object_id = f"{ISSUER_ID}.obj-itm-{persona}"
 
