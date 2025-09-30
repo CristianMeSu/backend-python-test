@@ -38,7 +38,7 @@ def google_pass():
     # =======================
     if realestate:
         qr_url = f"https://itmdesarrolladores.com/directorio/{persona}/"
-        hero_image = "https://www.itmdesarrolladores.com/core/views/547ab1bd38/assets/itm-logo-cyan.png"
+        hero_image = "https://www.itmdesarrolladores.com/core/views/547ab1bd38/assets/itm-logo.png"
         card_title = "ITM Desarrolladores"
         object_id = f"{ISSUER_ID}.obj-realestate-{persona}"
     else:
