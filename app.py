@@ -41,12 +41,13 @@ def google_pass():
         hero_image = "https://www.itmdesarrolladores.com/core/views/547ab1bd38/assets/itm-logo-space.png"
         card_title = "ITM Desarrolladores"
         object_id = f"{ISSUER_ID}.obj-realestate-{persona}"
+        background_color = "#10759b"   # azul itmdesarrolladores
     else:
         qr_url = f"https://itmgroup.mx/directorio/{persona}/"
         hero_image = "https://itmgroup.mx/core/views/ed294a0d7e/assets/banner-logo.png"
         card_title = "ITM Group"
         object_id = f"{ISSUER_ID}.obj-itm-{persona}"
-
+        background_color = "#23346f"   # azul corporativo itmgroup
 
     # Objeto genérico
     generic_object = {
@@ -66,8 +67,10 @@ def google_pass():
         },
         "cardTitle": {"defaultValue": {"language": "es", "value": card_title}},
         "header": {"defaultValue": {"language": "es", "value": nombre}},
-        "textModulesData": [{"header": "Directorio", "body": nombre}]
+        "textModulesData": [{"header": "Directorio", "body": nombre}],
+        "hexBackgroundColor": background_color   # 🎨 color de fondo definido
     }
+
 
     # Construir JWT
     jwt_payload = {
