@@ -44,7 +44,7 @@ def google_pass():
         background_color = "#10759b"   # azul itmdesarrolladores
     else:
         qr_url = f"https://itmgroup.mx/directorio/{persona}/"
-        hero_image = "https://itmgroup.mx/core/views/ed294a0d7e/assets/banner-logo.png"
+        hero_image = "https://itmgroup.mx/core/views/ed294a0d7e/assets/banner-logo-blanco.png"
         card_title = "ITM Group"
         object_id = f"{ISSUER_ID}.obj-itm-{persona}"
         background_color = "#23346f"   # azul corporativo itmgroup
