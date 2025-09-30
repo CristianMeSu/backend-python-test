@@ -33,8 +33,6 @@ def google_pass():
     cargo = request.args.get("cargo", "Cargo Demo")
     realestate = request.args.get("realestate", "false").lower() == "true"
 
-    object_id = f"{ISSUER_ID}.obj-{persona}"
-
     # =======================
     # Lógica según realestate
     # =======================
@@ -42,10 +40,13 @@ def google_pass():
         qr_url = f"https://itmdesarrolladores.com/directorio/{persona}/"
         hero_image = "https://itmdesarrolladores.com/assets/logo-realestate.png"
         card_title = "ITM Desarrolladores"
+        object_id = f"{ISSUER_ID}.obj-realestate-{persona}"
     else:
         qr_url = f"https://itmgroup.mx/directorio/{persona}/"
         hero_image = "https://itmgroup.mx/core/views/ed294a0d7e/assets/logo-ITM-Group-Blanco.png"
         card_title = "ITM Group"
+        object_id = f"{ISSUER_ID}.obj-itm-{persona}"
+
 
     # Objeto genérico
     generic_object = {
