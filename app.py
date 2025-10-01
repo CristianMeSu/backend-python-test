@@ -119,11 +119,11 @@ def apple_pass():
         qr_url = f"https://itmdesarrolladores.com/directorio/{persona}/"
         ORG_NAME = "ITM Desarrolladores"
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-        ICON_PATH = os.path.join(BASE_DIR, "static", "assets", "isoazul.png")
-        LOGO_PATH = os.path.join(BASE_DIR, "static", "assets", "logo.png")
-        LOGO_2X_PATH = os.path.join(BASE_DIR, "static", "assets", "logo@2x.png")
-        LOGO_3X_PATH = os.path.join(BASE_DIR, "static", "assets", "logo@3x.png")
-        BACKGROUND_PATH = os.path.join(BASE_DIR, "static", "assets", "background.png")
+        ICON_PATH = os.path.join(BASE_DIR, "static", "assetsrealestate", "isoazul.png")
+        LOGO_PATH = os.path.join(BASE_DIR, "static", "assetsrealestate", "logo.png")
+        LOGO_2X_PATH = os.path.join(BASE_DIR, "static", "assetsrealestate", "logo@2x.png")
+        LOGO_3X_PATH = os.path.join(BASE_DIR, "static", "assetsrealestate", "logo@3x.png")
+        BACKGROUND_PATH = os.path.join(BASE_DIR, "static", "assetsrealestate", "background.png")
     else:
         qr_url = f"https://itmgroup.mx/directorio/{persona}/"
         ORG_NAME = "ITM Group"
