@@ -59,7 +59,7 @@ def google_pass():
         "barcode": {
             "type": "QR_CODE",
             "value": qr_url,
-            "alternateText": persona  # 👈 aquí mejor pon algo corto
+            "alternateText": cargo  # 👈 aquí mejor pon algo corto
         },
         "heroImage": {
             "sourceUri": {"uri": hero_image},
