@@ -1,9 +1,14 @@
-from flask import Flask, request, redirect, send_file, after_this_request
+from flask import Flask, request, redirect, send_file, after_this_request, jsonify
+from flask_cors import CORS
 from google.oauth2 import service_account
 from py_pkpass.models import Pass, Barcode, StoreCard
-import jwt, time, json, os
+import jwt, time, json, os, sqlite3
 
 app = Flask(__name__)
+
+# CORS: solo permite peticiones desde itmgroup.mx
+CORS(app, resources={r"/persona/*": {"origins": ["https://itmgroup.mx", "https://www.itmgroup.mx"]}}
+)
 
 # ==========================
 # GOOGLE WALLET CONFIG
@@ -201,6 +206,29 @@ def apple_pass():
         as_attachment=True,
         download_name="directorio.pkpass"
     )
+
+# ==========================
+# DIRECTORIO API
+# ==========================
+
+def get_db():
+    conn = sqlite3.connect("database.db")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+@app.route("/persona/<int:persona_id>")
+def get_persona(persona_id):
+    conn = get_db()
+    persona = conn.execute(
+        "SELECT id, nombre, apellido, puesto, correo, celular, imagen FROM personas WHERE id = ?",
+        (persona_id,)
+    ).fetchone()
+    conn.close()
+
+    if persona is None:
+        return jsonify({"error": "Persona no encontrada"}), 404
+
+    return jsonify(dict(persona))
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
