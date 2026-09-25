@@ -7,8 +7,11 @@ import jwt, time, json, os, sqlite3
 app = Flask(__name__)
 
 # CORS: solo permite peticiones desde itmgroup.mx
-CORS(app, resources={r"/persona/*": {"origins": ["https://itmgroup.mx", "https://www.itmgroup.mx"]}}
-)
+_ALLOWED_ORIGINS = ["https://itmgroup.mx", "https://www.itmgroup.mx"]
+CORS(app, resources={
+    r"/persona/*": {"origins": _ALLOWED_ORIGINS},
+    r"/personas":  {"origins": _ALLOWED_ORIGINS},
+})
 
 # ==========================
 # GOOGLE WALLET CONFIG
@@ -247,6 +250,16 @@ def apple_pass():
 # ==========================
 # DIRECTORIO API
 # ==========================
+
+@app.route("/personas")
+def get_personas():
+    """Devuelve la lista completa de personas."""
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT id, nombre, apellido, puesto, correo, celular, imagen FROM personas ORDER BY id"
+    ).fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
 
 @app.route("/persona/<int:persona_id>")
 def get_persona(persona_id):
