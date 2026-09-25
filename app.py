@@ -31,27 +31,56 @@ PRIVATE_KEY = service_account_info["private_key"]
 ISSUER_ID = "3388000000022978257"
 CLASS_ID = "itm-group-directorio"
 
+# ==========================
+# HELPERS BD
+# ==========================
+
+def get_db():
+    conn = sqlite3.connect("database.db")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def fetch_persona(persona_id):
+    """Consulta la BD y devuelve el dict de la persona o None."""
+    conn = get_db()
+    row = conn.execute(
+        "SELECT id, nombre, apellido, puesto, correo, celular, imagen FROM personas WHERE id = ?",
+        (persona_id,)
+    ).fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
 @app.route("/google-pass")
 def google_pass():
-    persona = request.args.get("persona", "demo")
-    nombre = request.args.get("nombre", "Usuario Demo")
-    cargo = request.args.get("cargo", "Cargo Demo")
-    realestate = request.args.get("realestate", "false").lower() == "true"
+    persona_id = request.args.get("persona")
+    realestate  = request.args.get("realestate", "false").lower() == "true"
+
+    if not persona_id:
+        return jsonify({"error": "Falta el parametro persona"}), 400
+
+    # Obtener datos desde la BD
+    datos = fetch_persona(int(persona_id))
+    if datos is None:
+        return jsonify({"error": "Persona no encontrada"}), 404
+
+    nombre = f"{datos['nombre']} {datos['apellido']}"
+    cargo  = datos["puesto"]
 
     # =======================
     # Lógica según realestate
     # =======================
     if realestate:
-        qr_url = f"https://itmdesarrolladores.com/directorio/{persona}/"
-        hero_image = "https://www.itmdesarrolladores.com/core/views/547ab1bd38/assets/itm-logo-space.png"
-        card_title = "ITM Desarrolladores"
-        object_id = f"{ISSUER_ID}.obj-realestate-{persona}"
+        qr_url        = f"https://itmdesarrolladores.com/directorio/{persona_id}/"
+        hero_image    = "https://www.itmdesarrolladores.com/core/views/547ab1bd38/assets/itm-logo-space.png"
+        card_title    = "ITM Desarrolladores"
+        object_id     = f"{ISSUER_ID}.obj-realestate-{persona_id}"
         background_color = "#10759b"   # azul itmdesarrolladores
     else:
-        qr_url = f"https://itmgroup.mx/directorio/{persona}/"
-        hero_image = "https://backends.itmgroup.mx/media/banner-wallet/banner-blanco.jpeg"
-        card_title = "ITM Group"
-        object_id = f"{ISSUER_ID}.obj-itm-{persona}"
+        qr_url        = f"https://itmgroup.mx/directorio/{persona_id}/"
+        hero_image    = "https://backends.itmgroup.mx/media/banner-wallet/banner-blanco.jpeg"
+        card_title    = "ITM Group"
+        object_id     = f"{ISSUER_ID}.obj-itm-{persona_id}"
         background_color = "#23346f"   # azul corporativo itmgroup
 
     # Objeto genérico
@@ -59,27 +88,25 @@ def google_pass():
         "id": object_id,
         "classId": f"{ISSUER_ID}.{CLASS_ID}",
         "state": "ACTIVE",
-        "accountId": persona,
-        "accountName": f"Contacto {persona}",
+        "accountId": str(persona_id),
+        "accountName": nombre,
         "barcode": {
             "type": "QR_CODE",
             "value": qr_url,
-            "alternateText": cargo  # 👈 aquí mejor pon algo corto
+            "alternateText": cargo
         },
         "heroImage": {
             "sourceUri": {"uri": hero_image},
             "contentDescription": {"defaultValue": {"language": "es", "value": "Logo"}}
         },
         "cardTitle": {"defaultValue": {"language": "es", "value": card_title}},
-        "header": {"defaultValue": {"language": "es", "value": nombre}},
+        "header":    {"defaultValue": {"language": "es", "value": nombre}},
         "textModulesData": [
             {"header": "Directorio", "body": nombre},
-            {"header": "Cargo", "body": cargo}
+            {"header": "Cargo",      "body": cargo}
         ],
         "hexBackgroundColor": background_color
     }
-
-
 
     # Construir JWT
     jwt_payload = {
@@ -90,7 +117,7 @@ def google_pass():
         "payload": {"genericObjects": [generic_object]}
     }
 
-    token = jwt.encode(jwt_payload, PRIVATE_KEY, algorithm="RS256")
+    token    = jwt.encode(jwt_payload, PRIVATE_KEY, algorithm="RS256")
     save_url = f"https://pay.google.com/gp/v/save/{token}"
 
     return redirect(save_url)
@@ -112,10 +139,20 @@ TEAM_IDENTIFIER = "2ULQN9G3B2"
 
 @app.route("/apple-pass")
 def apple_pass():
-    persona = request.args.get("persona")
-    nombre = request.args.get("nombre")
-    cargo = request.args.get("cargo")
-    realestate = request.args.get("realestate", "false").lower() == "true"
+    persona_id = request.args.get("persona")
+    realestate  = request.args.get("realestate", "false").lower() == "true"
+
+    if not persona_id:
+        return jsonify({"error": "Falta el parametro persona"}), 400
+
+    # Obtener datos desde la BD
+    datos = fetch_persona(int(persona_id))
+    if datos is None:
+        return jsonify({"error": "Persona no encontrada"}), 404
+
+    persona = str(persona_id)
+    nombre  = f"{datos['nombre']} {datos['apellido']}"
+    cargo   = datos["puesto"]
 
     # =======================
     # Lógica según realestate
@@ -210,11 +247,6 @@ def apple_pass():
 # ==========================
 # DIRECTORIO API
 # ==========================
-
-def get_db():
-    conn = sqlite3.connect("database.db")
-    conn.row_factory = sqlite3.Row
-    return conn
 
 @app.route("/persona/<int:persona_id>")
 def get_persona(persona_id):
