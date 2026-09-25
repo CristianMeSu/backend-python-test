@@ -1,2 +1,4 @@
 certificates/
 service-account.json
+token.txt
+database.db
