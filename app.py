@@ -253,10 +253,13 @@ def apple_pass():
 
 @app.route("/personas")
 def get_personas():
-    """Devuelve la lista completa de personas."""
+    """Devuelve la lista pública de personas (sin datos sensibles).
+    Solo incluye los campos necesarios para el buscador/listado.
+    Para correo y celular usar GET /persona/<id>.
+    """
     conn = get_db()
     rows = conn.execute(
-        "SELECT id, nombre, apellido, puesto, correo, celular, imagen FROM personas ORDER BY id"
+        "SELECT id, nombre, apellido, puesto, imagen FROM personas ORDER BY id"
     ).fetchall()
     conn.close()
     return jsonify([dict(r) for r in rows])
