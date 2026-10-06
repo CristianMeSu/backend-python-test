@@ -9,8 +9,8 @@ app = Flask(__name__)
 # CORS: solo permite peticiones desde itmgroup.mx
 _ALLOWED_ORIGINS = ["https://itmgroup.mx", "https://www.itmgroup.mx"]
 CORS(app, resources={
-    r"/persona/*": {"origins": _ALLOWED_ORIGINS},
-    r"/personas":  {"origins": _ALLOWED_ORIGINS},
+    r"/persona/*": {"origins": _ALLOWED_ORIGINS, "allow_headers": ["Content-Type", "X-API-Key", "x-api-key"]},
+    r"/personas":  {"origins": _ALLOWED_ORIGINS, "allow_headers": ["Content-Type", "X-API-Key", "x-api-key"]},
 })
 
 # ==========================
@@ -272,6 +272,11 @@ def get_personas():
 
 @app.route("/persona/<int:persona_id>")
 def get_persona(persona_id):
+    api_key = request.headers.get("X-API-Key") or request.args.get("api_key")
+    expected_key = os.environ.get("DIRECTORIO_API_KEY", "itm_dir_sec_89d3a71b2e")
+    if not api_key or api_key != expected_key:
+        return jsonify({"error": "Acceso no autorizado. Se requiere API Key valida."}), 401
+
     conn = get_db()
     persona = conn.execute(
         "SELECT id, nombre, apellido, puesto, correo, celular, imagen FROM personas WHERE id = ?",
