@@ -1,0 +1,26 @@
+Ver si esta corriendo:
+systemctl --user status wallet-backend
+
+Ver errores:
+journalctl --user -u wallet-backend -f
+
+Reiniciar servicio:
+systemctl --user restart wallet-backend
+
+Detener servicio:
+systemctl --user stop wallet-backend
+
+Iniciar servicio:
+systemctl --user start wallet-backend
+
+
+Si en el futuro agregas nuevas librerías al código (requirements.txt):
+
+Activa el entorno virtual:
+source venv/bin/activate
+
+Instala las dependencias nuevas:
+pip install -r requirements.txt
+
+Reinicia el servicio para que tome los cambios:
+systemctl --user restart wallet-backend

@@ -226,9 +226,15 @@ def apple_pass():
     #     filename         # archivo de salida
     # )
     filename = f"{persona}.pkpass"
-    CERT_P12_PATH = "/etc/secrets/cert.pem"
-    KEY_PATH      = "/etc/secrets/key.pem"
-    WWDR_PEM_PATH = "/etc/secrets/wwdr.pem"
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    if os.path.exists("/etc/secrets/cert.pem"):
+        CERT_P12_PATH = "/etc/secrets/cert.pem"
+        KEY_PATH      = "/etc/secrets/key.pem"
+        WWDR_PEM_PATH = "/etc/secrets/wwdr.pem"
+    else:
+        CERT_P12_PATH = os.path.join(BASE_DIR, "certificates", "cert.pem")
+        KEY_PATH      = os.path.join(BASE_DIR, "certificates", "key.pem")
+        WWDR_PEM_PATH = os.path.join(BASE_DIR, "certificates", "wwdr.pem")
 
     passfile.create(CERT_P12_PATH, KEY_PATH, WWDR_PEM_PATH, None, filename)
 
