@@ -273,8 +273,8 @@ def get_personas():
 @app.route("/persona/<int:persona_id>")
 def get_persona(persona_id):
     api_key = request.headers.get("X-API-Key") or request.args.get("api_key")
-    expected_key = os.environ.get("DIRECTORIO_API_KEY", "itm_dir_sec_89d3a71b2e")
-    if not api_key or api_key != expected_key:
+    expected_key = os.environ.get("DIRECTORIO_API_KEY")
+    if not expected_key or not api_key or api_key != expected_key:
         return jsonify({"error": "Acceso no autorizado. Se requiere API Key valida."}), 401
 
     conn = get_db()
